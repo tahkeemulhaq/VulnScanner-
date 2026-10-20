@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VULNSCANNER</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#02080d;color:#e7f1ef;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden}
+:root{--g:#00f28a;--g2:#00c96f;--cyan:#13d9c5;--muted:#758c8c;--border:#18302e;--panel:rgba(4,13,18,.88)}
+body:before{content:"";position:fixed;inset:0;z-index:-5;background:radial-gradient(circle at 55% 34%,rgba(0,255,120,.06),transparent 31%),linear-gradient(90deg,rgba(0,255,120,.025) 1px,transparent 1px),linear-gradient(rgba(0,255,120,.02) 1px,transparent 1px);background-size:auto,42px 42px,42px 42px}
+.top{height:47px;border-bottom:1px solid #102321;background:#02080c;display:flex;align-items:center;padding:0 16px;position:fixed;top:0;left:0;right:0;z-index:100}.logo{font-size:17px;font-weight:900;letter-spacing:-.04em}.logo span{color:var(--g)}.hamb{margin-left:58px;color:#7c9291;font-size:20px}.topright{margin-left:auto;display:flex;gap:10px}.topicon{width:32px;height:30px;border:0;border-radius:8px;background:#071219;color:#a8bbb8}
+.shell{display:grid;grid-template-columns:216px 1fr;min-height:100vh;padding-top:47px}.side{position:fixed;top:47px;bottom:0;width:216px;border-right:1px solid #112522;background:linear-gradient(180deg,#030b10,#02080d);padding:16px 11px;overflow:auto}.sect{font-size:10px;color:#607875;margin:10px 13px 7px}.nav{display:flex;align-items:center;gap:12px;padding:9px 13px;margin:2px 0;border-radius:7px;color:#d6e0de;font-size:13px;text-decoration:none}.nav:hover,.nav.active{background:linear-gradient(90deg,rgba(0,242,138,.17),rgba(0,242,138,.025));color:#fff}.nav{cursor:pointer;user-select:none;-webkit-user-select:none}.nav.active{border-left:2px solid var(--g);padding-left:11px}.ico{width:17px;color:#a8bfbb;text-align:center}.main{grid-column:2;min-width:0;padding:0 16px 30px;position:relative}
+.hero{text-align:center;height:115px;padding-top:11px;position:relative;z-index:5}.live{display:inline-flex;gap:8px;align-items:center;padding:6px 14px;border:1px solid rgba(0,242,138,.35);border-radius:20px;background:rgba(0,242,138,.055);color:var(--g);font:11px ui-monospace,monospace;letter-spacing:.12em}.live i{width:5px;height:5px;border-radius:50%;background:var(--g);box-shadow:0 0 10px var(--g);animation:blink 1s infinite}.hero h1{margin:9px 0 3px;font-size:45px;line-height:1;letter-spacing:-.05em}.hero h1 span{color:var(--g)}.hero p{margin:0;color:#8da09f;font-size:13px}
+.content{display:grid;grid-template-columns:minmax(650px,1fr) 256px;gap:10px;max-width:1320px;margin:0 auto}.center{min-width:0}
+.radar-area{height:475px;position:relative;margin-top:-5px;overflow:hidden;background:radial-gradient(ellipse at center,rgba(0,255,120,.09),transparent 48%)}
+.mapdots{position:absolute;inset:15px 0 0;background-image:radial-gradient(circle,rgba(0,242,138,.42) 1px,transparent 1.2px);background-size:7px 7px;opacity:.19;mask-image:radial-gradient(ellipse at center,black 0,transparent 72%)}
+.orbit{position:absolute;left:50%;top:50%;width:500px;height:500px;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(0,242,138,.26);box-shadow:0 0 55px rgba(0,242,138,.025),inset 0 0 60px rgba(0,242,138,.035)}
+.o2{width:420px;height:420px}.o3{width:340px;height:340px}.o4{width:250px;height:250px}
+.cross{position:absolute;background:rgba(0,242,138,.19)}.xh{width:100%;height:1px;left:0;top:50%}.xv{height:100%;width:1px;top:0;left:50%}
+.sweep{position:absolute;left:50%;top:50%;height:3px;width:250px;transform-origin:left center;background:linear-gradient(90deg,#dcfff1 0%,#21ff98 23%,rgba(0,242,138,.25) 70%,transparent);box-shadow:0 0 18px #00f28a;animation:sweep 3.1s linear infinite}
+.sweep:after{content:"";position:absolute;left:0;top:-135px;width:250px;height:270px;background:linear-gradient(90deg,rgba(0,242,138,.27),rgba(0,242,138,.07),transparent);clip-path:polygon(0 50%,100% 0,100% 100%);filter:blur(3px)}
+.cd{position:absolute;width:8px;height:8px;border-radius:50%;left:calc(50% - 4px);top:calc(50% - 4px);background:#d7fff0;box-shadow:0 0 20px #00f28a,0 0 5px #fff}.tick{position:absolute;left:50%;top:0;width:2px;height:10px;background:var(--g);transform-origin:0 250px;opacity:.55}.tick:nth-child(1){transform:rotate(20deg)}.tick:nth-child(2){transform:rotate(40deg)}.tick:nth-child(3){transform:rotate(60deg)}.tick:nth-child(4){transform:rotate(80deg)}.tick:nth-child(5){transform:rotate(100deg)}.tick:nth-child(6){transform:rotate(120deg)}.tick:nth-child(7){transform:rotate(140deg)}.tick:nth-child(8){transform:rotate(160deg)}
+.target{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--g);box-shadow:0 0 14px var(--g);animation:target 2.6s infinite}.p1{left:39%;top:45%;animation-delay:.4s}.p2{left:58%;top:26%;animation-delay:1s}.p3{left:61%;top:55%;animation-delay:1.5s}.p4{left:47%;top:63%;animation-delay:2s}
+.angle{position:absolute;color:#0b9b59;font:10px ui-monospace,monospace}.a90{top:6%;left:50%}.a0{right:17%;top:50%}.a180{bottom:6%;left:50%}.a270{left:17%;top:50%}
+.console{position:relative;margin:-52px 10px 0;height:405px;border:1px solid #203532;border-radius:8px;background:#02070a;box-shadow:0 20px 40px rgba(0,0,0,.45);z-index:10;overflow:hidden}.ctop{height:35px;border-bottom:1px solid #18302d;background:#071016;display:flex;align-items:center;padding:0 14px;gap:7px}.win{width:10px;height:10px;border-radius:50%;background:#ff5c57}.win:nth-child(2){background:#ffbd2f}.win:nth-child(3){background:#29c941}.ctitle{margin-left:20px;color:#16c97d;font:10px ui-monospace,monospace}.cbody{height:370px;overflow:auto;padding:15px 17px;color:#9cafac;font:13px/1.48 ui-monospace,SFMono-Regular,Menlo,monospace}.prompt{color:#00f28a}.cmd{color:#f1c64e}.line{white-space:pre-wrap}.cursor{display:inline-block;width:7px;height:15px;background:var(--g);animation:blink .8s steps(2) infinite;vertical-align:middle}
+.steps{margin:10px 10px 0;height:61px;border:1px solid #18302e;background:#061016;border-radius:7px;display:grid;grid-template-columns:repeat(5,1fr);overflow:hidden}.step{display:flex;align-items:center;gap:9px;padding:7px 18px;border-right:1px solid #18302e;font-size:11px;color:#758a89}.step:last-child{border:0}.circle{width:31px;height:31px;border-radius:50%;border:1px solid #617876;display:grid;place-items:center;flex:none}.step.done{color:#dceae7}.step.done .circle{border-color:var(--g);color:var(--g);box-shadow:0 0 10px rgba(0,242,138,.18)}.step.active{color:#fff}.step.active .circle{border-color:var(--g);color:var(--g);box-shadow:0 0 13px rgba(0,242,138,.22);animation:spinCircle 1.5s linear infinite}.step small{display:block;color:#819491;margin-top:2px}.step.active small{color:var(--g)}
+.progress{height:34px;margin:10px 10px 0;border:1px solid #18302e;border-radius:6px;padding:8px 20px;position:relative;background:#071115}.bar{height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,#0bc866,#18f28c);box-shadow:0 0 12px rgba(0,242,138,.3);transition:width .7s}.pct{position:absolute;left:0;right:0;top:8px;text-align:center;font:10px ui-monospace,monospace;color:#00f28a}
+.right{padding-top:5px}.card{border:1px solid #1a302f;border-radius:8px;background:linear-gradient(180deg,rgba(5,15,20,.94),rgba(3,11,15,.94));padding:16px;margin-bottom:10px;box-shadow:inset 0 0 20px rgba(0,242,138,.012)}.title{color:#00e989;font-size:11px;letter-spacing:.06em;font-weight:800;margin-bottom:15px}.target-card{height:109px}.targetrow{display:flex;gap:12px;align-items:center}.targeticon{width:35px;height:35px;border-radius:50%;border:2px solid #075f48;display:grid;place-items:center;color:#00e989;font-size:19px;box-shadow:0 0 13px rgba(0,242,138,.08)}.targetname{color:#00e989;font-weight:700;font-size:12px}.targetip{color:#78908d;font-size:10px;margin-top:6px}
+.info{height:205px}.info-row{display:flex;justify-content:space-between;margin:0 0 15px;font-size:11px}.info-row span:first-child{color:#819491}.info-row span:last-child{color:#e0ebe8}.green{color:#00ef86!important}.stats{height:391px}.stat{height:59px;border:1px solid #17302f;border-radius:7px;background:#071218;margin:7px 0;padding:9px 11px}.statlabel{font-size:9px;color:#c5d3d1}.statvalue{margin-top:7px;color:#dce9e6;font-size:14px}.statvalue.green{color:#00ef86!important}.mini-bar{height:3px;background:#102522;border-radius:3px;margin-top:6px}.mini-bar i{display:block;height:100%;width:46%;background:#00e989;box-shadow:0 0 8px rgba(0,242,138,.4)}.risk{height:184px;position:relative}.gauge{width:146px;height:75px;margin:20px auto 0;border:10px solid #233130;border-bottom:0;border-radius:150px 150px 0 0;position:relative;overflow:hidden}.gauge:before{content:"";position:absolute;left:-10px;top:-10px;width:146px;height:75px;border-top:10px solid #f5b72d;border-radius:150px 150px 0 0;transform:rotate(-24deg);transform-origin:50% 100%}.risknum{position:absolute;left:0;right:0;top:66px;text-align:center;font-size:28px;font-weight:900}.risknum small{font-size:9px;color:#6d8380;font-weight:500}.risklabel{text-align:center;color:#f5b72d;font-size:10px;margin-top:9px;font-weight:800}
+.controls,.results,.history{max-width:1320px;margin:10px auto 0}.controls{display:grid;grid-template-columns:1fr 1fr 1fr 1.15fr;gap:9px}.control{border:1px solid var(--border);background:var(--panel);padding:12px;border-radius:8px}.control label{display:block;font-size:9px;color:#77908d;margin-bottom:6px}.control input,.control select{width:100%;background:#030b0f;border:1px solid #1a3430;border-radius:5px;color:#dce9e6;padding:8px;font-size:11px}.launch{margin-top:8px;width:100%;border:0;border-radius:5px;padding:9px;background:#11d678;color:#00140b;font-weight:900;font-size:10px}.download{margin-top:6px;width:100%;border:1px solid #1a3833;background:#071419;color:#9eb7b2;border-radius:5px;padding:8px;font-size:10px}
+.results{color:#dbe7e4}.host{border:1px solid var(--border);background:var(--panel);padding:12px;border-radius:8px;margin-bottom:8px}.table{width:100%;border-collapse:collapse;margin-top:8px}.table th,.table td{padding:7px;border-bottom:1px solid #132724;text-align:left;font-size:10px}.table th{color:#78908d}.notice{display:none;margin:8px auto;max-width:1320px;padding:8px;border-radius:5px;font-size:10px}.error{background:#2a1015;border:1px solid #5a1d27;color:#ff9da6}.success{background:#082318;border:1px solid #15543a;color:#70e0aa}
+@keyframes sweep{to{transform:rotate(360deg)}}@keyframes target{0%,100%{opacity:.25;transform:scale(.7)}35%{opacity:1;transform:scale(1.9)}60%{opacity:.4;transform:scale(1)}}@keyframes blink{50%{opacity:0}}@keyframes spinCircle{to{transform:rotate(360deg)}}
+@media(max-width:1100px){.content{grid-template-columns:1fr}.right{display:grid;grid-template-columns:repeat(2,1fr)}.radar-area{height:410px}.console{margin-top:-40px}.controls{grid-template-columns:1fr 1fr}.side{width:190px}.shell{grid-template-columns:190px 1fr}}
+@media(max-width:720px){.side{display:none}.shell{display:block}.main{padding:0 8px 20px}.hero h1{font-size:34px}.radar-area{height:340px}.orbit{width:310px;height:310px}.o2{width:260px;height:260px}.o3{width:205px;height:205px}.o4{width:145px;height:145px}.console{height:330px;margin-top:-30px}.cbody{height:295px;font-size:11px}.steps{grid-template-columns:1fr 1fr;height:auto}.step{padding:8px}.right{display:block}.controls{grid-template-columns:1fr}.hamb{margin-left:20px}}
+
+.settings-about{max-width:1320px;margin:18px auto;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.panel-card{background:rgba(5,16,18,.94);border:1px solid #153b35;border-radius:10px;padding:20px;box-shadow:0 10px 35px rgba(0,0,0,.18)}
+.panel-card .title{color:#00f28a;font-size:12px;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+.panel-card h3{margin:0 0 10px;color:#eefbf7;font-size:18px}
+.panel-card p,.panel-card li{color:#9bb3ae;font-size:12px;line-height:1.7}
+.panel-card ul{padding-left:20px;margin:8px 0}
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #14302c}
+.setting-row:last-child{border-bottom:0}
+.setting-row label{color:#d8e8e4;font-size:12px}
+.setting-row small{display:block;color:#718b85;margin-top:3px}
+.setting-row select,.setting-row input{background:#071417;color:#dff8f0;border:1px solid #1b4941;border-radius:6px;padding:7px 9px}
+.switch{width:42px;height:22px;accent-color:#00f28a}
+.action-btn{background:#0a2521;color:#00f28a;border:1px solid #1b5a4e;border-radius:6px;padding:8px 12px;cursor:pointer}
+.action-btn:hover{background:#10372f}
+@media(max-width:900px){.settings-about{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="logo">VULN<span>SCANNER</span></div><div class="hamb">☰</div>
+ <div class="topright"><button class="topicon">☾</button><button class="topicon">♧</button><button class="topicon">♙</button></div>
+</header>
+<div class="shell">
+<aside class="side">
+ <div class="sect">SCANNING</div>
+ <a class="nav active" href="#dashboard" onclick="navAction('dashboard');return false;"><span class="ico">⌂</span>Dashboard</a>
+ <a class="nav" href="#controls" onclick="navAction('newscan');return false;"><span class="ico">⊕</span>New Scan</a>
+ <a class="nav" href="#history" onclick="navAction('history');return false;"><span class="ico">◫</span>Scan History</a>
+ <a class="nav" href="#comparison" onclick="navAction('comparison');return false;"><span class="ico">⇄</span>Scan Comparison</a>
+ <a class="nav" href="#controls" onclick="navAction('saved');return false;"><span class="ico">♡</span>Saved Targets</a>
+ <div class="sect">SCAN MODULES</div>
+ <a class="nav" href="#controls" onclick="moduleAction('host_discovery');return false;"><span class="ico">◎</span>Host Discovery</a>
+ <a class="nav" href="#controls" onclick="moduleAction('tcp');return false;"><span class="ico">⌁</span>TCP Scan</a>
+ <a class="nav" href="#controls" onclick="moduleAction('udp');return false;"><span class="ico">◇</span>UDP Scan</a>
+ <a class="nav" href="#controls" onclick="moduleAction('service');return false;"><span class="ico">◉</span>Service Detection</a>
+ <a class="nav" href="#controls" onclick="moduleAction('os');return false;"><span class="ico">▣</span>OS Detection</a>
+ <a class="nav" href="#controls" onclick="moduleAction('nse');return false;"><span class="ico">⌘</span>NSE Scripts</a>
+ <a class="nav" href="#controls" onclick="moduleAction('vuln');return false;"><span class="ico">♢</span>Vulnerability Scan</a>
+ <div class="sect">REPORTS</div>
+ <a class="nav" href="#results" onclick="navAction('reports');return false;"><span class="ico">▤</span>Reports</a><a class="nav" href="#results" onclick="navAction('pdf');return false;"><span class="ico">▧</span>PDF Reports</a>
+ <div class="sect">SYSTEM</div>
+ <a class="nav" href="#controls" onclick="navAction('settings');return false;"><span class="ico">⚙</span>Settings</a><a class="nav" href="#about" onclick="navAction('about');return false;"><span class="ico">ⓘ</span>About</a>
+</aside>
+<main class="main" id="dashboard">
+ <section class="hero"><div class="live"><i></i> CONSOLE LIVE</div><h1>VULN<span>SCANNER</span></h1><p>Advanced automated network mapping and script audit telemetry node.</p></section>
+ <div class="content">
+  <section class="center">
+   <div class="radar-area">
+    <div class="mapdots"></div>
+    <div class="orbit"><div class="orbit o2"></div><div class="orbit o3"></div><div class="orbit o4"></div><div class="cross xh"></div><div class="cross xv"></div>
+      <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+      <div class="sweep"></div><div class="cd"></div>
+    </div>
+    <div class="target p1"></div><div class="target p2"></div><div class="target p3"></div><div class="target p4"></div>
+    <span class="angle a90">90</span><span class="angle a0">360</span><span class="angle a180">180</span><span class="angle a270">90</span>
+   </div>
+   <div class="console">
+    <div class="ctop"><span class="win"></span><span class="win"></span><span class="win"></span><span class="ctitle">scanner@recon-node: ~</span></div>
+    <div class="cbody" id="terminal">
+      <div class="line"><span class="prompt">scanner@recon-node:~$</span> <span class="cmd">nmap -sV --script vulners -Pn --top-ports 100</span> <span id="targetCmd">scanme.nmap.org</span></div>
+      <div class="line term-muted">[+] Starting Nmap 7.95 ( https://nmap.org )</div>
+      <div class="line term-muted">[+] Initiating Ping Scan at <span id="time1">19:16</span></div>
+      <div class="line term-good">[+] Host scanme.nmap.org (45.33.32.156) is up.</div>
+      <div class="line term-muted">[+] Initiating Parallel DNS resolution of 1 host.</div>
+      <div class="line term-muted">[+] Completed Parallel DNS resolution of 1 host.</div>
+      <div class="line term-muted">[+] Initiating SYN Stealth Scan</div>
+      <div class="line term-muted">[+] Scanning scanme.nmap.org [100 ports]</div>
+      <div class="line term-good">[+] Discovered open port 22/tcp ssh</div>
+      <div class="line term-good">[+] Discovered open port 80/tcp http</div>
+      <div class="line term-good">[+] Discovered open port 443/tcp https</div>
+      <div class="line term-good">[+] Discovered open port 9929/tcp nping-echo</div>
+      <div class="line term-muted">[+] Initiating Service scan</div>
+      <div class="line term-muted" id="serviceLine">[+] Service scan: About 42.86% done; ETC: —</div>
+      <div class="line term-muted">[+] Initiating Script scan using vulners</div>
+      <div class="line term-good">[+] NSE: Script scanning target.</div>
+      <div class="line"><span class="cursor"></span></div>
+    </div>
+   </div>
+   <div class="steps">
+    <div class="step done" id="s1"><span class="circle">✓</span><div>1. Host Discovery<small>Completed</small></div></div>
+    <div class="step active" id="s2"><span class="circle">◎</span><div>2. Port Scanning<small>In Progress</small></div></div>
+    <div class="step" id="s3"><span class="circle">○</span><div>3. Service Detection<small>Pending</small></div></div>
+    <div class="step" id="s4"><span class="circle">○</span><div>4. Script Scanning<small>Pending</small></div></div>
+    <div class="step" id="s5"><span class="circle">○</span><div>5. Analysis<small>Pending</small></div></div>
+   </div>
+   <div class="progress"><div class="bar" id="bar"></div><div class="pct" id="pct">0%</div></div>
+  </section>
+  <aside class="right">
+   <div class="card target-card"><div class="title">TARGET</div><div class="targetrow"><div class="targeticon">◎</div><div><div class="targetname" id="targetName">scanme.nmap.org</div><div class="targetip" id="targetIp">45.33.32.156</div></div></div></div>
+   <div class="card info"><div class="title">SCAN INFO</div>
+    <div class="info-row"><span>Scan Type</span><span id="scanInfo">Standard Scan</span></div><div class="info-row"><span>Ports</span><span>Top 100</span></div><div class="info-row"><span>NSE Scripts</span><span>vulners</span></div><div class="info-row"><span>Start Time</span><span id="startTime">20 Aug 2026, 19:16:42</span></div><div class="info-row"><span>Status</span><span class="green" id="status">In Progress</span></div>
+   </div>
+   <div class="card stats"><div class="title">LIVE STATS</div>
+    <div class="stat"><div class="statlabel">◉ &nbsp; HOSTS UP</div><div class="statvalue green" id="hosts">1</div></div>
+    <div class="stat"><div class="statlabel">◉ &nbsp; PORTS SCANNED</div><div class="statvalue" id="ports">46 / 100</div><div class="mini-bar"><i id="mini"></i></div></div>
+    <div class="stat"><div class="statlabel">◉ &nbsp; OPEN PORTS</div><div class="statvalue" id="open">4</div></div>
+    <div class="stat"><div class="statlabel">♧ &nbsp; NSE RESULTS</div><div class="statvalue" id="nsecount">12</div></div>
+    <div class="stat"><div class="statlabel">♢ &nbsp; FOUND VULNERABILITIES</div><div class="statvalue" style="color:#ff4754" id="vulns">3</div></div>
+   </div>
+   <div class="card risk"><div class="title">RISK SCORE</div><div class="gauge"></div><div class="risknum" id="risk">48<small>/ 100</small></div><div class="risklabel">MEDIUM</div></div>
+  </aside>
+ </div>
+
+ <section class="controls" id="controls">
+  <div class="control"><label>Target</label><input id="target" placeholder="IP / domain" value="scanme.nmap.org"></div>
+  <div class="control"><label>Scan Type</label><select id="scanType"></select></div>
+  <div class="control"><label>NSE Scripts</label><select id="nse"></select></div>
+  <div class="control"><label>Ports</label><input id="portsInput" placeholder="22,80,443"><button class="launch" id="launch" onclick="runScan()">LAUNCH SCAN 🚀</button><button class="download" onclick="downloadReport()">DOWNLOAD PDF</button></div>
+ </section>
+ <div id="notice" class="notice"></div>
+ <section class="results" id="results"></section>
+ <section class="history card" id="history" style="max-width:1320px"><div class="title">SCAN HISTORY</div><div id="historyList" class="muted">No scans yet.</div></section>
+ <section class="history card" id="comparison" style="max-width:1320px"><div class="title">SCAN COMPARISON</div><div id="comparisonBody" class="muted">Run a scan to compare results.</div></section>
+
+<section class="settings-about">
+  <div class="panel-card" id="settings">
+    <div class="title">SETTINGS</div>
+    <h3>Scan Configuration</h3>
+    <div class="setting-row">
+      <div><label>OS Detection</label><small>Use Nmap OS fingerprinting when supported.</small></div>
+      <input class="switch" id="osDetect" type="checkbox" checked>
+    </div>
+    <div class="setting-row">
+      <div><label>Default Scan Profile</label><small>Profile selected when the dashboard loads.</small></div>
+      <select id="defaultProfile">
+        <option value="standard">Standard Scan</option>
+        <option value="quick">Quick Scan</option>
+        <option value="comprehensive">Comprehensive Scan</option>
+        <option value="host_discovery">Host Discovery</option>
+        <option value="udp">UDP Scan</option>
+        <option value="full">Full TCP Scan</option>
+        <option value="targeted">Targeted Scan</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <div><label>Default NSE</label><small>Script category used for new scans.</small></div>
+      <select id="defaultNse">
+        <option value="none">No NSE Scripts</option>
+        <option value="safe">Safe Scripts</option>
+        <option value="default">Default Scripts</option>
+        <option value="discovery">Discovery Scripts</option>
+        <option value="web">Web + TLS</option>
+        <option value="vuln">Vulnerability Scripts</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <div><label>Actions</label><small>Apply these defaults to the New Scan form.</small></div>
+      <button class="action-btn" onclick="applySettings()">APPLY</button>
+    </div>
+  </div>
+
+  <div class="panel-card" id="about">
+    <div class="title">ABOUT VULNSCANNER</div>
+    <h3>Nmap Security Assessment Platform</h3>
+    <p>VULNSCANNER is a local Flask-based security assessment dashboard built around Nmap. It provides a web interface for authorized network scanning and presents the results in a structured, easy-to-read format.</p>
+    <ul>
+      <li>Host discovery and TCP/UDP scanning</li>
+      <li>Service and version detection</li>
+      <li>Optional OS detection and NSE script execution</li>
+      <li>Severity-based vulnerability findings and risk scoring</li>
+      <li>Scan history and scan-to-scan comparison</li>
+      <li>PDF report generation</li>
+    </ul>
+    <p><strong>Technology:</strong> Python, Flask, Nmap, XML parsing and ReportLab.</p>
+    <p><strong>Security note:</strong> Only scan systems you own or have explicit permission to assess.</p>
+  </div>
+</section>
+
+</main>
+</div>
+<script>
+let currentResult=null,profiles={},nseOptions={},timer=null;
+const $=id=>document.getElementById(id);
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function notify(text,error=false){let n=$("notice");n.className="notice "+(error?"error":"success");n.textContent=text;n.style.display="block"}
+async function init(){
+ try{
+  profiles=await fetch("/scan-profiles").then(r=>r.json());nseOptions=await fetch("/nse-options").then(r=>r.json());
+  Object.entries(profiles).forEach(([k,v])=>{let o=document.createElement("option");o.value=k;o.textContent=v.label;$("scanType").appendChild(o)});
+  Object.entries(nseOptions).forEach(([k,v])=>{let o=document.createElement("option");o.value=k;o.textContent=v.label;$("nse").appendChild(o)});
+  $("target").oninput=e=>{$("targetName").textContent=e.target.value||"No target";$("targetCmd").textContent=e.target.value||"enter_target"};
+  loadHistory();
+ }catch(e){notify("Backend not connected. Start app.py.",true)}
+}
+function animate(){
+ clearInterval(timer);let i=0,steps=[["s1",8,"Host Discovery","Completed"],["s2",46,"Port Scanning","In Progress"],["s3",68,"Service Detection","In Progress"],["s4",84,"Script Scanning","In Progress"],["s5",96,"Analysis","In Progress"]];
+ timer=setInterval(()=>{let x=steps[i++];if(!x){clearInterval(timer);return}steps.forEach((q,n)=>{let el=$(q[0]);el.classList.remove("active","done");if(n<i-1)el.classList.add("done");if(n===i-1)el.classList.add("active")});$("bar").style.width=x[1]+"%";$("pct").textContent=x[1]+"%";$("ports").textContent=Math.round(x[1])+" / 100";$("mini").style.width=x[1]+"%";$("serviceLine").textContent="[+] Service scan: About "+x[1]+"% done; ETC: —";$("status").textContent="In Progress"},850)
+}
+async function runScan(){
+ let target=$("target").value.trim();if(!target){notify("Enter a target.",true);return}
+ $("launch").disabled=true;$("launch").textContent="SCANNING...";$("status").textContent="In Progress";$("startTime").textContent=new Date().toLocaleString();animate();
+ try{
+  let r=await fetch("/scan",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target,scan_type:$("scanType").value||"standard",top_ports:100,ports:$("portsInput").value.trim(),nse:$("nse").value||"vuln",os_detect:$("osDetect") ? $("osDetect").checked : false})});
+  let d=await r.json();if(!r.ok||d.status!=="success")throw new Error(d.message||"Scan failed");currentResult=d;clearInterval(timer);finish(d);notify("Nmap scan completed successfully.");loadHistory()
+ }catch(e){clearInterval(timer);$("status").textContent="Error";notify(e.message,true)}
+ finally{$("launch").disabled=false;$("launch").textContent="LAUNCH SCAN 🚀"}
+}
+function finish(d){
+ $("bar").style.width="100%";$("pct").textContent="100%";$("status").textContent="Complete";
+ let s=d.summary||{},r=s.risk||{};$("hosts").textContent=s.hosts_up??0;$("ports").textContent=(s.open_ports??0)+" / 100";$("open").textContent=s.open_ports??0;$("nsecount").textContent=s.scripts_run??0;$("vulns").textContent=s.findings_total??0;$("risk").innerHTML=`${r.score??0}<small>/ 100</small>`;
+ document.querySelector(".risklabel").textContent=r.label||"LOW";
+ for(let n=1;n<=5;n++){let e=$("s"+n);e.classList.remove("active");e.classList.add("done");e.querySelector("small").textContent="Completed";e.querySelector(".circle").textContent="✓"}
+ $("terminal").innerHTML+=`<div class="line term-good">[+] Scan completed successfully.</div><div class="line term-good">[+] XML parsed and dashboard updated.</div>`;
+ render(d);
+}
+function render(d){
+ let out=$("results");out.innerHTML="";
+ (d.hosts||[]).forEach(h=>{let rows=(h.ports||[]).map(p=>{let s=p.service||{};return `<tr><td>${esc(p.port)}/${esc(p.protocol)}</td><td>${esc(p.state)}</td><td>${esc(s.name)}</td><td>${esc([s.product,s.version,s.extra].filter(Boolean).join(" "))}</td></tr>`}).join("");let el=document.createElement("div");el.className="host";el.innerHTML=`<b style="color:#00f28a">${esc(h.address)}</b> • ${esc(h.status)} • OS: ${esc(h.os)}<table class="table"><thead><tr><th>PORT</th><th>STATE</th><th>SERVICE</th><th>VERSION</th></tr></thead><tbody>${rows||"<tr><td colspan=4>No open ports</td></tr>"}</tbody></table>`;out.appendChild(el)});
+ let c=d.comparison||{};$("comparisonBody").innerHTML=c.available?`New ports: <b>${esc((c.new_ports||[]).join(", ")||"None")}</b><br>Closed ports: <b>${esc((c.closed_ports||[]).join(", ")||"None")}</b>`:"No previous scan available.";
+}
+async function loadHistory(){try{let h=await fetch("/history").then(r=>r.json());$("historyList").innerHTML=h.length?h.slice(0,8).map(x=>`<div style="padding:8px 0;border-bottom:1px solid #14302c;font-size:10px"><b style="color:#00f28a">${esc(x.target)}</b> • ${esc(x.scan_type_label)} • ${esc(x.timestamp)}</div>`).join(""):"No scans yet."}catch(e){}}
+async function downloadReport(){if(!currentResult){notify("Run a scan first.",true);return}let r=await fetch("/report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(currentResult)});if(!r.ok){notify("Report generation failed.",true);return}let b=await r.blob(),u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download="VulnScanner_Report.pdf";a.click();URL.revokeObjectURL(u)}
+
+function scrollToId(id){
+  const el=$(id);
+  if(el) el.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function selectScanType(value){
+  const s=$("scanType");
+  if(s){
+    s.value=value;
+    s.dispatchEvent(new Event("change"));
+  }
+}
+function selectNse(value){
+  const s=$("nse");
+  if(s){
+    s.value=value;
+    s.dispatchEvent(new Event("change"));
+  }
+}
+
+function applySettings(){
+  const profile=$("defaultProfile")?.value||"standard";
+  const nse=$("defaultNse")?.value||"safe";
+  selectScanType(profile);
+  selectNse(nse);
+  scrollToId("controls");
+  notify("Settings applied to the New Scan form.");
+}
+
+function navAction(action){
+  document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));
+  const map={
+    dashboard:"dashboard",
+    newscan:"controls",
+    history:"history",
+    comparison:"comparison",
+    reports:"results",
+    pdf:"results",
+    settings:"settings",
+    about:"about",
+    saved:"controls"
+  };
+  if(action==="pdf"){
+    if(currentResult) downloadReport();
+    else notify("Run a scan first to generate a PDF report.",true);
+  }else if(action==="saved"){
+    scrollToId("controls");
+    $("target").focus();
+    notify("Enter an authorized target to use it as a saved target.");
+   }else if(action==="settings"){
+    scrollToId("settings");
+  }else if(action==="about"){
+    scrollToId("about");
+  }else{
+    scrollToId(map[action]||"controls");
+  }
+}
+function moduleAction(module){
+  scrollToId("controls");
+  if(module==="host_discovery"){
+    selectScanType("host_discovery");
+    notify("Host Discovery selected.");
+  }else if(module==="tcp"){
+    selectScanType("standard");
+    notify("TCP Standard Scan selected.");
+  }else if(module==="udp"){
+    selectScanType("udp");
+    notify("UDP Scan selected.");
+  }else if(module==="service"){
+    selectScanType("standard");
+    notify("Service Detection selected.");
+  }else if(module==="os"){
+    selectScanType("comprehensive");
+    notify("Comprehensive Scan selected for OS detection.");
+  }else if(module==="nse"){
+    selectScanType("standard");
+    selectNse("default");
+    notify("NSE Scripts selected.");
+  }else if(module==="vuln"){
+    selectScanType("standard");
+    selectNse("vuln");
+    notify("Vulnerability Scan selected.");
+  }
+}
+
+init();
+</script>
+</body>
+</html>

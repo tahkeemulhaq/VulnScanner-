@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/local/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.991 scan initiated Sun Sep  6 16:01:43 2026 as: nmap -T4 -Pn -n -sS -sV -O -&#45;script vuln -&#45;script-timeout 30s -p- -oX scan_cde88a56fe724131b71c779475f2b4e9.xml scanme.nmap.org -->
+<nmaprun scanner="nmap" args="nmap -T4 -Pn -n -sS -sV -O -&#45;script vuln -&#45;script-timeout 30s -p- -oX scan_cde88a56fe724131b71c779475f2b4e9.xml scanme.nmap.org" start="1788690703" startstr="Sun Sep  6 16:01:43 2026" version="7.991" xmloutputversion="1.05">
+<scaninfo type="syn" protocol="tcp" numservices="65535" services="1-65535"/>
